@@ -36,3 +36,12 @@ class TestISBNValidator(TestCase):
         for (code_string, valid) in TestISBNValidator.test_data_isbn13.items():
             result = ISBNValidator.validate_isbn13(code_string=code_string)
             self.assertEqual(result, valid)
+
+    def test_validate_isbn(self):
+        # The last literal in this dictionary resets the valid ISBN-10 to true (which is a false case in test_data_isbn13)
+        items_to_test = {**TestISBNValidator.test_data_isbn10,
+                         **TestISBNValidator.test_data_isbn13,
+                         "0136091814": True}
+        for (code_string, valid) in items_to_test.items():
+            result = ISBNValidator.validate_isbn(code_string=code_string)
+            self.assertEqual(result, valid)
