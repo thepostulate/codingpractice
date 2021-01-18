@@ -1,4 +1,3 @@
-
 class ISBNValidator:
 
     @staticmethod
@@ -37,6 +36,17 @@ class ISBNValidator:
             weight = 1 + ((count % 2) * 2)
             checksum += (int(digit) * weight)
         return (checksum % 10) == 0
+
+    @staticmethod
+    def validate_isbn(code_string: str) -> bool:
+        # Validate an ISBN of unknown format.
+        isbn_string = ISBNValidator.prepare_code_string(code_string)
+        if len(isbn_string) == 10:
+            return ISBNValidator.validate_isbn10(isbn_string)
+        elif len(isbn_string) == 13:
+            return ISBNValidator.validate_isbn13(isbn_string)
+        else:
+            return False
 
 
 if __name__ == '__main__':
