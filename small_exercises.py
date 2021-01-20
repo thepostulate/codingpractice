@@ -1,4 +1,7 @@
+
 class ISBNValidator:
+    class FormatException(Exception):
+        pass
 
     @staticmethod
     def prepare_code_string(code_string: str) -> str:
@@ -47,6 +50,29 @@ class ISBNValidator:
             return ISBNValidator.validate_isbn13(isbn_string)
         else:
             return False
+
+    @staticmethod
+    def calculate_isbn_13_checkdigit(isbn13_first12_numbers: str) -> str:
+        if len(isbn13_first12_numbers) != 12 or not isbn13_first12_numbers.isnumeric():
+            raise ISBNValidator.FormatException("Improper format in first 12 numbers of ISBN13")
+        checksum = 0
+        for (count, digit) in enumerate(isbn13_first12_numbers):
+            weight = 1 + ((count % 2) * 2)
+            checksum += (int(digit) * weight)
+        checkdigit = (10 - (checksum % 10)) % 10
+        return str(checkdigit)
+
+    @staticmethod
+    def convert_isbn_10_to_13(isbn10_code_string: str) -> str:
+        if not ISBNValidator.validate_isbn10(isbn10_code_string):
+            raise ISBNValidator.FormatException(f"{isbn10_code_string} is not a valid ISBN-10 code string.")
+
+        # Remove the dashes and spaces from the code string and drop the check digit
+        new_isbn = ISBNValidator.prepare_code_string(isbn10_code_string)[0:9]
+        new_isbn = "978" + new_isbn
+        check_digit = ISBNValidator.calculate_isbn_13_checkdigit(new_isbn)
+        new_isbn += check_digit
+        return new_isbn
 
 
 if __name__ == '__main__':
