@@ -27,6 +27,15 @@ class TestISBNValidator(TestCase):
         " 9781566199094 ": True
     }
 
+    test_data_convert_10_to_13 = {
+        "0201882957": "9780201882957",
+        "1420951300": "9781420951301",
+        "0452284236": "9780452284234",
+        "1292101768": "9781292101767",
+        "0345391802": "9780345391803",
+        "0-34539-180-2": "9780345391803"
+    }
+
     def test_validate_isbn10(self):
         for (code_string, valid) in TestISBNValidator.test_data_isbn10.items():
             result = ISBNValidator.validate_isbn10(code_string=code_string)
@@ -45,3 +54,13 @@ class TestISBNValidator(TestCase):
         for (code_string, valid) in items_to_test.items():
             result = ISBNValidator.validate_isbn(code_string=code_string)
             self.assertEqual(result, valid)
+
+    def test_convert_isbn_10_to_13(self):
+        for (isbn_10, isbn_13) in TestISBNValidator.test_data_convert_10_to_13.items():
+            result = ISBNValidator.convert_isbn_10_to_13(isbn_10)
+            self.assertEqual(isbn_13, result)
+
+        # Test invalid input
+        invalid_isbn_10 = "1-55404-294-X"
+        with self.assertRaises(ISBNValidator.FormatException):
+            ISBNValidator.convert_isbn_10_to_13(invalid_isbn_10)
