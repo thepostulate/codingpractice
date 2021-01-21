@@ -36,6 +36,12 @@ class TestISBNValidator(TestCase):
         "0-34539-180-2": "9780345391803"
     }
 
+    test_data_isbn_13_checkdigit = {
+        "978186197876": "9",
+        "978156619909": "4",
+        "978129210176": "7"
+    }
+
     def test_validate_isbn10(self):
         for (code_string, valid) in TestISBNValidator.test_data_isbn10.items():
             result = ISBNValidator.validate_isbn10(code_string=code_string)
@@ -59,8 +65,20 @@ class TestISBNValidator(TestCase):
         for (isbn_10, isbn_13) in TestISBNValidator.test_data_convert_10_to_13.items():
             result = ISBNValidator.convert_isbn_10_to_13(isbn_10)
             self.assertEqual(isbn_13, result)
-
         # Test invalid input
         invalid_isbn_10 = "1-55404-294-X"
         with self.assertRaises(ISBNValidator.FormatException):
             ISBNValidator.convert_isbn_10_to_13(invalid_isbn_10)
+
+    def test_calculate_isbn_13_checkdigit(self):
+        # Check valid conversions
+        for (first_12_digits, checkdigit) in TestISBNValidator.test_data_isbn_13_checkdigit.items():
+            result = ISBNValidator.calculate_isbn_13_checkdigit(first_12_digits)
+            self.assertEqual(result, checkdigit)
+        # Test invalid input - Improper length
+        with self.assertRaises(ISBNValidator.FormatException):
+            ISBNValidator.calculate_isbn_13_checkdigit("123")
+        # Test invalid input - Code with dashes
+        with self.assertRaises(ISBNValidator.FormatException):
+            ISBNValidator.calculate_isbn_13_checkdigit("978-1-86197-")
+
