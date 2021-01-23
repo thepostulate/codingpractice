@@ -50,7 +50,10 @@ class TestChecksumCalculator(TestCase):
     test_data_upc = {
         "087162143127": True,
         "087162143128": False,
-        "796030114977": True
+        "796030114977": True,
+        "0 36000 29145 2": True,
+        "123": False,
+
     }
 
     def test_validate_isbn10(self):
@@ -97,13 +100,11 @@ class TestChecksumCalculator(TestCase):
         for (first_11_digits, checkdigit) in TestChecksumCalculator.test_data_upc_checkdigit.items():
             result = ChecksumCalculator.calculate_upc_checkdigit(first_11_digits)
             self.assertEqual(checkdigit, result)
+        with self.assertRaises(ChecksumCalculator.FormatException):
+            ChecksumCalculator.calculate_upc_checkdigit("0871X2143127")
 
     def test_validate_upc(self):
         for (code_string, valid) in TestChecksumCalculator.test_data_upc.items():
             result = ChecksumCalculator.validate_upc(code_string)
             self.assertEqual(valid, result)
-
-
-
-
 
