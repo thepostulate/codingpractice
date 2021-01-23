@@ -1,8 +1,8 @@
 from unittest import TestCase
-from small_exercises import ISBNValidator
+from small_exercises import ChecksumCalculator
 
 
-class TestISBNValidator(TestCase):
+class TestChecksumCalculator(TestCase):
     test_data_isbn10 = {
         "123": False,
         "0136091814": True,
@@ -42,43 +42,68 @@ class TestISBNValidator(TestCase):
         "978129210176": "7"
     }
 
+    test_data_upc_checkdigit = {
+        "79603011497": "7",
+        "08716214312": "7",
+    }
+
+    test_data_upc = {
+        "087162143127": True,
+        "087162143128": False,
+        "796030114977": True
+    }
+
     def test_validate_isbn10(self):
-        for (code_string, valid) in TestISBNValidator.test_data_isbn10.items():
-            result = ISBNValidator.validate_isbn10(code_string=code_string)
-            self.assertEqual(result, valid)
+        for (code_string, valid) in TestChecksumCalculator.test_data_isbn10.items():
+            result = ChecksumCalculator.validate_isbn10(code_string=code_string)
+            self.assertEqual(valid, result)
 
     def test_validate_isbn13(self):
-        for (code_string, valid) in TestISBNValidator.test_data_isbn13.items():
-            result = ISBNValidator.validate_isbn13(code_string=code_string)
-            self.assertEqual(result, valid)
+        for (code_string, valid) in TestChecksumCalculator.test_data_isbn13.items():
+            result = ChecksumCalculator.validate_isbn13(code_string=code_string)
+            self.assertEqual(valid, result)
 
     def test_validate_isbn(self):
         # The last literal in this dictionary resets the valid ISBN-10 to true (which is a false case in test_data_isbn13)
-        items_to_test = {**TestISBNValidator.test_data_isbn10,
-                         **TestISBNValidator.test_data_isbn13,
+        items_to_test = {**TestChecksumCalculator.test_data_isbn10,
+                         **TestChecksumCalculator.test_data_isbn13,
                          "0136091814": True}
         for (code_string, valid) in items_to_test.items():
-            result = ISBNValidator.validate_isbn(code_string=code_string)
-            self.assertEqual(result, valid)
+            result = ChecksumCalculator.validate_isbn(code_string=code_string)
+            self.assertEqual(valid, result)
 
     def test_convert_isbn_10_to_13(self):
-        for (isbn_10, isbn_13) in TestISBNValidator.test_data_convert_10_to_13.items():
-            result = ISBNValidator.convert_isbn_10_to_13(isbn_10)
+        for (isbn_10, isbn_13) in TestChecksumCalculator.test_data_convert_10_to_13.items():
+            result = ChecksumCalculator.convert_isbn_10_to_13(isbn_10)
             self.assertEqual(isbn_13, result)
         # Test invalid input
         invalid_isbn_10 = "1-55404-294-X"
-        with self.assertRaises(ISBNValidator.FormatException):
-            ISBNValidator.convert_isbn_10_to_13(invalid_isbn_10)
+        with self.assertRaises(ChecksumCalculator.FormatException):
+            ChecksumCalculator.convert_isbn_10_to_13(invalid_isbn_10)
 
     def test_calculate_isbn_13_checkdigit(self):
         # Check valid conversions
-        for (first_12_digits, checkdigit) in TestISBNValidator.test_data_isbn_13_checkdigit.items():
-            result = ISBNValidator.calculate_isbn_13_checkdigit(first_12_digits)
-            self.assertEqual(result, checkdigit)
+        for (first_12_digits, checkdigit) in TestChecksumCalculator.test_data_isbn_13_checkdigit.items():
+            result = ChecksumCalculator.calculate_isbn_13_checkdigit(first_12_digits)
+            self.assertEqual(checkdigit, result)
         # Test invalid input - Improper length
-        with self.assertRaises(ISBNValidator.FormatException):
-            ISBNValidator.calculate_isbn_13_checkdigit("123")
+        with self.assertRaises(ChecksumCalculator.FormatException):
+            ChecksumCalculator.calculate_isbn_13_checkdigit("123")
         # Test invalid input - Code with dashes
-        with self.assertRaises(ISBNValidator.FormatException):
-            ISBNValidator.calculate_isbn_13_checkdigit("978-1-86197-")
+        with self.assertRaises(ChecksumCalculator.FormatException):
+            ChecksumCalculator.calculate_isbn_13_checkdigit("978-1-86197-")
+
+    def test_calculate_upc_checkdigit(self):
+        for (first_11_digits, checkdigit) in TestChecksumCalculator.test_data_upc_checkdigit.items():
+            result = ChecksumCalculator.calculate_upc_checkdigit(first_11_digits)
+            self.assertEqual(checkdigit, result)
+
+    def test_validate_upc(self):
+        for (code_string, valid) in TestChecksumCalculator.test_data_upc.items():
+            result = ChecksumCalculator.validate_upc(code_string)
+            self.assertEqual(valid, result)
+
+
+
+
 
